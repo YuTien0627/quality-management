@@ -1,4 +1,5 @@
-
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -442,13 +443,14 @@
             const renderExternalProjects = (organizer, subCategory = null) => {
                 const container = document.getElementById('external-projects');
                 container.innerHTML = '';
-                let projectsToRender = [];
-
+                
                 if (organizer === 'upcoming') {
-                    const upcomingTasks = [];
+                    // 針對「待辦事項」頁籤，將活動依月份分組顯示
+                    const upcomingByMonth = {};
                     const today = new Date();
                     const currentMonth = today.getMonth() + 1;
 
+                    // 遞迴遍歷所有外部競賽資料，找出所有待辦或進行中的任務
                     const traverseData = (data, organizerName = null) => {
                         for (const key in data) {
                             const projects = data[key];
@@ -462,7 +464,11 @@
                                         const isInprogress = task.status === 'inprogress';
                                         
                                         if ((isUpcoming || isInprogress) && taskMonth >= currentMonth && taskMonth <= 12) {
-                                            upcomingTasks.push({
+                                            const monthText = `${taskMonth}月`;
+                                            if (!upcomingByMonth[monthText]) {
+                                                upcomingByMonth[monthText] = [];
+                                            }
+                                            upcomingByMonth[monthText].push({
                                                 organizer: organizerName || key,
                                                 projectName: project.name,
                                                 task: task
@@ -476,12 +482,43 @@
                         }
                     };
                     traverseData(externalProjectsData);
-                    projectsToRender = upcomingTasks.map(item => ({
-                        name: `${item.organizer} - ${item.projectName}`,
-                        progress: null,
-                        tasks: [item.task]
-                    }));
-                } else if (subCategory) {
+
+                    const sortedMonths = Object.keys(upcomingByMonth).sort((a, b) => {
+                        const monthA = parseInt(a.replace('月', ''), 10);
+                        const monthB = parseInt(b.replace('月', ''), 10);
+                        return monthA - monthB;
+                    });
+
+                    if (sortedMonths.length === 0) {
+                        container.innerHTML = `<p class="text-gray-500 text-center">目前無相關待辦活動。</p>`;
+                        return;
+                    }
+                    
+                    let allHtml = '';
+                    sortedMonths.forEach(month => {
+                        allHtml += `
+                            <div class="mb-6">
+                                <h4 class="month-title">${month} 待辦</h4>
+                                <ul class="task-list">
+                                    ${upcomingByMonth[month].map(item => `
+                                        <li>
+                                            <div class="flex items-center justify-between">
+                                                <span>${item.task.description} <span class="text-gray-500 text-sm">(${item.organizer} - ${item.projectName})</span></span>
+                                                <span class="status-badge ${getStatusBadgeClass(item.task.status)}">${getStatusText(item.task.status)}</span>
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = allHtml;
+                    return;
+                } 
+                
+                // 處理其他頁籤的顯示邏輯
+                let projectsToRender = [];
+                if (subCategory) {
                     projectsToRender = externalProjectsData[organizer][subCategory] || [];
                 } else {
                     projectsToRender = externalProjectsData[organizer] || [];
@@ -663,4 +700,4 @@
         });
     </script>
 </body>
-
+</html>
