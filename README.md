@@ -1,6 +1,5 @@
 <head>
     <title>奇美醫院品質提升活動儀表板</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -127,7 +126,7 @@
     <div class="container">
         <header class="text-center mb-8">
             <h1 class="text-4xl font-extrabold text-gray-900 mb-2">奇美醫院品質提升活動儀表板</h1>
-            <p class="text-xl text-gray-600">追蹤所有院內外品質活動的進度</p>
+            <p class="text-xl text-gray-600">追蹤所有院內外品質提升活動的進度</p>
         </header>
 
         <!-- Tab Buttons -->
