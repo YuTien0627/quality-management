@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇美醫院品質提升活動儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+        .progress-bar {
+            height: 0.75rem;
+            border-radius: 9999px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+            border-radius: 9999px;
+        }
+        .task-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .task-list li:last-child {
+            border-bottom: none;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-upcoming {
+            background-color: #e0f2fe;
+            color: #0c4a6e;
+        }
+        .status-inprogress {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+        .status-award {
+            background-color: #ffedd5;
+            color: #9a3412;
+        }
+        .status-promoted {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-button:hover {
+            color: #4b5563;
+        }
+        .tab-button.active {
+            color: #111827;
+            border-color: #2563eb;
+        }
+        .sub-tab-button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background-color: transparent;
+        }
+        .sub-tab-button:hover {
+            background-color: #e5e7eb;
+        }
+        .sub-tab-button.active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        /* Custom background colors */
+        .bg-white-card {
+            background-color: #ffffff;
+        }
+        .bg-pink-card {
+            background-color: #fce7f3;
+        }
+        .bg-yellow-card {
+            background-color: #fffbeb;
+        }
+        .month-title {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">奇美醫院品質提升活動儀表板</h1>
+            <p class="text-xl text-gray-600">追蹤所有院內外品質活動的進度</p>
+        </header>
+
+        <!-- Tab Buttons -->
+        <div class="flex justify-center mb-8 border-b border-gray-300">
+            <button class="tab-button active" data-tab="internal">院內品質提升活動</button>
+            <button class="tab-button" data-tab="external">院外品質競賽</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="internal-tab" class="tab-content active">
+            <section id="internal-section" class="card bg-white">
+                <h2 class="section-title">院內品質提升活動</h2>
+                <!-- Internal Sub-tab Buttons -->
+                <div class="flex flex-wrap gap-2 mb-6" id="internal-sub-tabs">
+                    <button class="sub-tab-button active" data-category="qccTeam">QCC團隊</button>
+                    <button class="sub-tab-button" data-category="qmConsultants">品管輔導員</button>
+                    <button class="sub-tab-button" data-category="allHospitalEvents">全院性活動</button>
+                </div>
+                <div id="internal-projects" class="space-y-6"></div>
+            </section>
+        </div>
+
+        <div id="external-tab" class="tab-content hidden">
+            <section id="external-section" class="card bg-white">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="section-title" id="external-title">所有競賽</h2>
+                </div>
+                <!-- Sub-tab Buttons -->
+                <div class="flex flex-wrap gap-2 mb-6" id="external-sub-tabs"></div>
+                <!-- Sub-tab Content -->
+                <div id="external-projects" class="space-y-6"></div>
+            </section>
+        </div>
+
+        <footer class="text-center text-gray-500 mt-8">
+            <p>&copy; 2025 奇美醫院品質管理部. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const externalProjectsData = {
+                '醫策會-國家醫療品質獎(NHQA)': {
+                    '主題類': [
+                        {
+                            name: '主題改善組/菁英組',
+                            team: '改善組:ICG圈, 菁英組:藥帶圈、急品圈安老組、救生圈',
+                            progress: 80,
+                            tasks: [
+                                { description: '5/9(五) 前繳交競賽書面資料+報名表', status: 'completed' },
+                                { description: '6-7月 報名資料行政審查及書面審查', status: 'completed' },
+                                { description: '8/5(二) ICG圈面談', status: 'completed' },
+                                { description: '9/11(四) 急品圈安老組實審', status: 'inprogress' },
+                                { description: '9/23(二) 藥帶圈實審', status: 'inprogress' },
+                                { description: '9/25(四) 救生圈實審', status: 'inprogress' },
+                                { description: '10/27-11/7 現場發表', status: 'upcoming' },
+                                { description: '12月 頒獎典禮', status: 'upcoming' },
+                                { description: '進級狀況: ICG圈、藥帶圈、急品圈安老組、救生圈 晉級', status: 'promoted' }
+                            ]
+                        },
+                    ],
+                    '系統類': [
+                        {
+                            name: '系統類',
+                            team: '卓越中心:藥劑部',
+                            progress: 70,
+                            tasks: [
+                                { description: '5/29(四) 前繳交書面資料+完成報名', status: 'completed' },
+                                { description: '6-7月 書面審查', status: 'completed' },
+                                { description: '10/15(三) 實地審查', status: 'upcoming' },
+                                { description: '12月 頒獎典禮', status: 'upcoming' }
+                            ]
+                        }
+                    ],
+                    '傑出醫療類': [
+                        {
+                            name: '傑出醫療類',
+                            team: '放射腫瘤部、預防醫學科',
+                            progress: 50,
+                            tasks: [
+                                { description: '5/29(四) 前繳交書面資料+完成報名', status: 'completed' },
+                                { description: '6-7月 書面審查', status: 'completed' },
+                                { description: '11/11(二) 放射腫瘤部實地審查', status: 'upcoming' },
+                                { description: '11/28(五) 預防醫學科實地審查', status: 'upcoming' },
+                                { description: '12月 頒獎典禮', status: 'upcoming' }
+                            ]
+                        }
+                    ],
+                    '智慧醫療類': [
+                        {
+                            name: '智慧醫療類',
+                            team: '智慧解決方案組:18組, 智慧服務組:2組(門、急診服務流程)',
+                            progress: 70,
+                            tasks: [
+                                { description: '5/29(四) 前繳交書面資料+完成報名', status: 'completed' },
+                                { description: '6-7月 書面審查', status: 'completed' },
+                                { description: '9/1(一)-9/12(五) 解決方案組現場發表', status: 'inprogress' },
+                                { description: '10/21(二) 服務流程組實地審查', status: 'upcoming' },
+                                { description: '11月 解決方案組/服務流程組現場發表', status: 'upcoming' },
+                                { description: '11月 解決方案組實地審查', status: 'upcoming' },
+                                { description: '12月 頒獎典禮', status: 'upcoming' },
+                                { description: '進級狀況: 解決方案組18組、服務流程組2組 晉級', status: 'promoted' }
+                            ]
+                        }
+                    ],
+                    '淨零醫療類': [
+                        {
+                            name: '淨零醫療類',
+                            team: '(企管部主責招募) 今年規劃,明年參賽',
+                            progress: 0,
+                            tasks: [
+                                { description: '無時程規劃', status: 'upcoming' }
+                            ]
+                        }
+                    ]
+                },
+                '台灣醫務管理學會': [
+                    {
+                        name: '台灣健康照護品質管理競賽',
+                        team: '救生圈、急品圈安老組、強心圈、救腦圈、綠巨人圈、足穩圈、是8Life',
+                        progress: 90,
+                        tasks: [
+                            { description: '5/7(三) 前繳交競賽書面資料+報名表', status: 'completed' },
+                            { description: '7/2(三) 公告書審結果', status: 'completed' },
+                            { description: '7/25(五) 前報名決賽+繳費', status: 'completed' },
+                            { description: '8/7(四) 決賽發表', status: 'completed' },
+                            { description: '10/14(二) 頒獎典禮', status: 'upcoming' },
+                            { description: '獲獎狀況: 2銅、4佳作、1入選', status: 'award' }
+                        ]
