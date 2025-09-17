@@ -163,7 +163,7 @@
         </div>
 
         <footer class="text-center text-gray-500 mt-8">
-            <p>&copy; 2025 奇美醫院品質管理中心. All rights reserved.</p>
+            <p>&copy; 2025 奇美醫院品質管理部. All rights reserved.</p>
         </footer>
     </div>
 
