@@ -3,261 +3,774 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>奇美醫院品質提升活動儀表板</title>
+    <title>奇美醫院品質提升活動進度表</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
-            color: #1f2937;
+            color: #374151;
+            padding: 2rem;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem;
-        }
-        .card {
+            background-color: white;
             border-radius: 1rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #111827;
-            margin-bottom: 1rem;
-        }
-        .progress-bar {
-            height: 0.75rem;
-            border-radius: 9999px;
-            background-color: #e5e7eb;
             overflow: hidden;
         }
-        .progress-fill {
-            height: 100%;
-            transition: width 0.5s ease-in-out;
-            border-radius: 9999px;
+        .tab-button {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #6b7280;
+            background-color: #f9fafb;
+            border-radius: 0.75rem 0.75rem 0 0;
+            border-bottom: 3px solid transparent;
         }
-        .task-list li {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e5e7eb;
+        .tab-button.active {
+            color: #1f2937;
+            background-color: #e5e7eb;
+            border-bottom: 3px solid #1f2937;
         }
-        .task-list li:last-child {
-            border-bottom: none;
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+        .tab-content.active {
+            display: block;
         }
         .status-badge {
-            display: inline-block;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
+            color: white;
+            text-align: center;
         }
         .status-completed {
-            background-color: #d1fae5;
-            color: #065f46;
+            background-color: #10b981;
         }
-        .status-upcoming {
-            background-color: #e0f2fe;
-            color: #0c4a6e;
+        .status-in-progress {
+            background-color: #f59e0b;
         }
-        .status-inprogress {
-            background-color: #fef9c3;
-            color: #854d0e;
+        .status-to-do {
+            background-color: #6b7280;
         }
-        .status-award {
-            background-color: #ffedd5;
-            color: #9a3412;
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.75rem;
         }
-        .status-promoted {
-            background-color: #dbeafe;
-            color: #1e40af;
+        th, td {
+            padding: 1rem;
+            text-align: left;
         }
-        .tab-button {
-            padding: 0.75rem 1.5rem;
-            font-size: 1.125rem;
-            font-weight: 500;
-            color: #6b7280;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
+        th {
+            background-color: #e5e7eb;
+            font-weight: 700;
         }
-        .tab-button:hover {
+        tr:nth-child(odd) {
+            background-color: #f9fafb;
+        }
+        .content-container {
+            min-height: 400px;
+        }
+        .tab-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+        }
+        .group-heading {
+            font-weight: 700;
             color: #4b5563;
+            background-color: #d1d5db;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
         }
-        .tab-button.active {
-            color: #111827;
-            border-color: #2563eb;
+        .sub-group-heading {
+            font-weight: 600;
+            color: #6b7280;
+            background-color: #e5e7eb;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            margin-left: 1rem;
+            border-left: 3px solid #9ca3af;
+        }
+        .bg-white-content {
+            background-color: white;
+        }
+        .bg-blue-100-content {
+            background-color: #dbeafe;
+        }
+        .bg-green-100-content {
+            background-color: #dcfce7;
+        }
+        .bg-purple-100-content {
+            background-color: #ede9fe;
+        }
+        .bg-orange-100-content {
+            background-color: #ffedd5;
+        }
+        .bg-red-100-content {
+            background-color: #fee2e2;
+        }
+        .bg-teal-100-content {
+            background-color: #ccfbf1;
         }
         .sub-tab-button {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #6b7280;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            background-color: transparent;
-        }
-        .sub-tab-button:hover {
-            background-color: #e5e7eb;
-        }
-        .sub-tab-button.active {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-        /* Custom background colors */
-        .bg-white-card {
-            background-color: #ffffff;
-        }
-        .bg-pink-card {
-            background-color: #fce7f3;
-        }
-        .bg-yellow-card {
-            background-color: #fffbeb;
-        }
-        .month-title {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 0.5rem 1rem;
             border-radius: 0.5rem;
-            font-weight: bold;
-            font-size: 1.25rem;
-            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            color: #4b5563;
+            background-color: #e5e7eb;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .sub-tab-button.active, .sub-tab-button:hover {
+            background-color: #d1d5db;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .completion-note {
+            font-size: 0.875rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .min-w-date {
+            min-width: 100px;
         }
     </style>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="container">
-        <header class="text-center mb-8">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">奇美醫院品質提升活動儀表板</h1>
-            <p class="text-xl text-gray-600">追蹤所有院內外品質活動的進度</p>
-        </header>
+<body class="bg-gray-100">
 
-        <!-- Tab Buttons -->
-        <div class="flex justify-center mb-8 border-b border-gray-300">
-            <button class="tab-button active" data-tab="internal">院內品質提升活動</button>
-            <button class="tab-button" data-tab="external">院外品質競賽</button>
-        </div>
-
-        <!-- Tab Content -->
-        <div id="internal-tab" class="tab-content active">
-            <section id="internal-section" class="card bg-white">
-                <h2 class="section-title">院內品質提升活動</h2>
-                <!-- Internal Sub-tab Buttons -->
-                <div class="flex flex-wrap gap-2 mb-6" id="internal-sub-tabs">
-                    <button class="sub-tab-button active" data-category="qccTeam">QCC團隊</button>
-                    <button class="sub-tab-button" data-category="qmConsultants">品管輔導員</button>
-                    <button class="sub-tab-button" data-category="allHospitalEvents">全院性活動</button>
-                </div>
-                <div id="internal-projects" class="space-y-6"></div>
-            </section>
-        </div>
-
-        <div id="external-tab" class="tab-content hidden">
-            <section id="external-section" class="card bg-white">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="section-title" id="external-title">所有競賽</h2>
-                </div>
-                <!-- Sub-tab Buttons -->
-                <div class="flex flex-wrap gap-2 mb-6" id="external-sub-tabs"></div>
-                <!-- Sub-tab Content -->
-                <div id="external-projects" class="space-y-6"></div>
-            </section>
-        </div>
-
-        <footer class="text-center text-gray-500 mt-8">
-            <p>&copy; 2025 奇美醫院品質管理部. All rights reserved.</p>
-        </footer>
+<div class="container mt-12 shadow-lg rounded-2xl">
+    <!-- Header -->
+    <div class="bg-blue-900 text-white text-center py-6 rounded-t-2xl">
+        <h1 class="text-3xl font-bold">奇美醫院品質提升活動進度表</h1>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const externalProjectsData = {
-                '醫策會-國家醫療品質獎(NHQA)': {
-                    '主題類': [
-                        {
-                            name: '主題改善組/菁英組',
-                            team: '改善組:ICG圈, 菁英組:藥帶圈、急品圈安老組、救生圈',
-                            progress: 80,
-                            tasks: [
-                                { description: '5/9(五) 前繳交競賽書面資料+報名表', status: 'completed' },
-                                { description: '6-7月 報名資料行政審查及書面審查', status: 'completed' },
-                                { description: '8/5(二) ICG圈面談', status: 'completed' },
-                                { description: '9/11(四) 急品圈安老組實審', status: 'inprogress' },
-                                { description: '9/23(二) 藥帶圈實審', status: 'inprogress' },
-                                { description: '9/25(四) 救生圈實審', status: 'inprogress' },
-                                { description: '10/27-11/7 現場發表', status: 'upcoming' },
-                                { description: '12月 頒獎典禮', status: 'upcoming' },
-                                { description: '進級狀況: ICG圈、藥帶圈、急品圈安老組、救生圈 晉級', status: 'promoted' }
-                            ]
-                        },
-                    ],
-                    '系統類': [
-                        {
-                            name: '系統類',
-                            team: '卓越中心:藥劑部',
-                            progress: 70,
-                            tasks: [
-                                { description: '5/29(四) 前繳交書面資料+完成報名', status: 'completed' },
-                                { description: '6-7月 書面審查', status: 'completed' },
-                                { description: '10/15(三) 實地審查', status: 'upcoming' },
-                                { description: '12月 頒獎典禮', status: 'upcoming' }
-                            ]
-                        }
-                    ],
-                    '傑出醫療類': [
-                        {
-                            name: '傑出醫療類',
-                            team: '放射腫瘤部、預防醫學科',
-                            progress: 50,
-                            tasks: [
-                                { description: '5/29(四) 前繳交書面資料+完成報名', status: 'completed' },
-                                { description: '6-7月 書面審查', status: 'completed' },
-                                { description: '11/11(二) 放射腫瘤部實地審查', status: 'upcoming' },
-                                { description: '11/28(五) 預防醫學科實地審查', status: 'upcoming' },
-                                { description: '12月 頒獎典禮', status: 'upcoming' }
-                            ]
-                        }
-                    ],
-                    '智慧醫療類': [
-                        {
-                            name: '智慧醫療類',
-                            team: '智慧解決方案組:18組, 智慧服務組:2組(門、急診服務流程)',
-                            progress: 70,
-                            tasks: [
-                                { description: '5/29(四) 前繳交書面資料+完成報名', status: 'completed' },
-                                { description: '6-7月 書面審查', status: 'completed' },
-                                { description: '9/1(一)-9/12(五) 解決方案組現場發表', status: 'inprogress' },
-                                { description: '10/21(二) 服務流程組實地審查', status: 'upcoming' },
-                                { description: '11月 解決方案組/服務流程組現場發表', status: 'upcoming' },
-                                { description: '11月 解決方案組實地審查', status: 'upcoming' },
-                                { description: '12月 頒獎典禮', status: 'upcoming' },
-                                { description: '進級狀況: 解決方案組18組、服務流程組2組 晉級', status: 'promoted' }
-                            ]
-                        }
-                    ],
-                    '淨零醫療類': [
-                        {
-                            name: '淨零醫療類',
-                            team: '(企管部主責招募) 今年規劃,明年參賽',
-                            progress: 0,
-                            tasks: [
-                                { description: '無時程規劃', status: 'upcoming' }
-                            ]
-                        }
+    <!-- Tabs -->
+    <div class="flex border-b border-gray-300 bg-gray-50">
+        <button class="tab-button active" onclick="openTab('home')">首頁</button>
+        <button class="tab-button" onclick="openTab('internal')">院內品質提升活動</button>
+        <button class="tab-button" onclick="openTab('external')">院外品質競賽</button>
+    </div>
+
+    <!-- Content -->
+    <div id="home" class="tab-content active content-container">
+        <h2 class="text-xl md:text-2xl font-bold mb-4">2025年院內QCC團隊清單</h2>
+        <div class="overflow-x-auto rounded-lg shadow-sm mb-8">
+            <table class="w-full text-sm text-gray-700">
+                <thead class="text-xs text-gray-900 uppercase bg-gray-200">
+                    <tr class="rounded-t-lg">
+                        <th scope="col" class="py-3 px-6 rounded-tl-lg">序號</th>
+                        <th scope="col" class="py-3 px-6">申請單位/圈名</th>
+                        <th scope="col" class="py-3 px-6 rounded-tr-lg">主題</th>
+                    </tr>
+                </thead>
+                <tbody id="qcc-teams">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-xl md:text-2xl font-bold mb-4">2025年報名院外競賽團隊清單</h2>
+        <div class="overflow-x-auto rounded-lg shadow-sm">
+            <table class="w-full text-sm text-gray-700">
+                <thead class="text-xs text-gray-900 uppercase bg-gray-200">
+                    <tr class="rounded-t-lg">
+                        <th scope="col" class="py-3 px-6 rounded-tl-lg">單位</th>
+                        <th scope="col" class="py-3 px-6">團隊/圈名</th>
+                        <th scope="col" class="py-3 px-6 rounded-tr-lg">主題</th>
+                    </tr>
+                </thead>
+                <tbody id="external-teams">
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="internal" class="tab-content content-container">
+        <h2 class="text-xl md:text-2xl font-bold mb-4">院內品質提升活動進度</h2>
+        <div class="flex space-x-4 mb-8 justify-center flex-wrap gap-2">
+            <button class="sub-tab-button" onclick="showInternalActivity('qccTeams')">QCC團隊</button>
+            <button class="sub-tab-button" onclick="showInternalActivity('consultants')">品管輔導員</button>
+            <button class="sub-tab-button" onclick="showInternalActivity('allHospital')">全院性活動</button>
+        </div>
+        <div id="internal-progress-view">
+            <p class="text-gray-500 text-center text-lg mt-12">請點選上方按鈕查看活動進度</p>
+        </div>
+    </div>
+
+    <div id="external" class="tab-content content-container">
+        <div class="flex space-x-4 mb-8 justify-center flex-wrap gap-2">
+            <button class="sub-tab-button" onclick="showExternalCompetition('醫管學會')">台灣醫務管理學會</button>
+            <button class="sub-tab-button" onclick="showExternalCompetition('先鋒品質')">財團法人先鋒品質管制學術研究基金會</button>
+            <button class="sub-tab-button" onclick="showExternalCompetition('中衛')">中衛發展中心</button>
+            <button class="sub-tab-button" onclick="showExternalCompetition('醫品協會')">台灣醫療品質協會</button>
+            <button class="sub-tab-button" onclick="showExternalCompetition('SNQ')">生策中心(SNQ)</button>
+            <button class="sub-tab-button" onclick="showExternalCompetition('NHQA')">醫策會國家醫療品質獎(NHQA)</button>
+        </div>
+
+        <div id="external-progress-view">
+            <!-- Content will be loaded here dynamically -->
+        </div>
+    </div>
+</div>
+
+<script>
+    const qccTeams = [
+        { id: 1, unit: '放射腫瘤部/奇放圈', topic: '提升乳癌病人接受體表追蹤呼吸調控技術之電腦斷層模擬定位成功率', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 2, unit: '成癮防治科/紓嗜圈', topic: '提升一般酒癮初診病人,其心理衡鑑、社會生活功能評估與職能評鑑完成率', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 3, unit: '職業醫學科/「職」有為你圈', topic: '提升手部壓砸職傷個案至職業醫學科門診就診率', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 4, unit: '健康促進組/哈伯圈', topic: '提升內科門診戒菸成功率', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 5, unit: '7B病房/共好圈', topic: '提升大腸直腸癌術後病人之早期下床活動比率', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 6, unit: '臨床病理部/受益圈', topic: '提升急診生化危急值檢驗報告時效合格率', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 7, unit: '教學部/晉級教教者圈', topic: '以核心能力為導向的教育訓練來提升PGY醫師臨床照護品質', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 8, unit: '教學部/教學會得圈', topic: '建構教學中心成為以人工智慧驅動的學習型組織', group: 'A組', consultant: '陳建宇顧問' },
+        { id: 9, unit: '7A病房/ICG圈', topic: '提升外科病房護理師職場復原力', group: 'B組', consultant: '廖熏香顧問' },
+        { id: 10, unit: '急診醫學部/急品圈安老組', topic: 'E化轉銜,無縫接軌——提升門診轉銜至居家醫療成功率', group: 'B組', consultant: '廖熏香顧問' },
+        { id: 11, unit: '心臟血管內科/強心圈', topic: '提升左心室正常收縮分率心臟衰竭 (HFpEF)病人的整合性醫療照護品質', group: 'B組', consultant: '廖熏香顧問' },
+        { id: 12, unit: '麻醉部/麻吉舒適圈', topic: '降低麻醉部自控式止痛(PCA)給藥錯誤率', group: 'B組', consultant: '廖熏香顧問' },
+        { id: 13, unit: '癌症中心/是8Life圈', topic: '提升B肝帶原化療病人,抗病毒藥物使用率', group: 'B組', consultant: '廖熏香顧問' },
+        { id: 14, unit: '4A加護病房/保溫圈', topic: '提升新生兒加護病房之早產兒資訊傳遞與照護者參與成效', group: 'B組', consultant: '廖熏香顧問' },
+        { id: 15, unit: '腦中風中心/救腦圈', topic: '提升缺血性腦中風接受EVT之病患三個月mRS 0-2分之比率', group: 'B組', consultant: '廖熏香顧問' },
+    ];
+
+    const internalEvents = [
+        { month: '二月', date: '2/12', type: '課程', category: '品質提升活動 QCC 運作說明會', topic: '有興趣組成團隊參加品質提升活動者皆可報名', group: '全院' },
+        { month: '二月', date: '2/25', type: '課程', category: '品質提升活動課程(Q1)', topic: '品管通識課程-多元品管手法及工具簡介', group: '全院' },
+        { month: '三月', date: '3/5', type: '輔導', category: '進度輔導(Q2)-A組', topic: '討論主題及品管工具選用/活動計劃擬訂', group: 'A' },
+        { month: '三月', date: '3/6', type: '輔導', category: '進度輔導(Q2)-B組', topic: '討論主題及品管工具選用/活動計劃擬訂', group: 'B' },
+        { month: '三月', date: '3/20', type: '課程', category: '品質提升活動課程(Q3)', topic: 'QCC 基礎課程-品管改善工具步驟介紹與應用－問題解決型、課題達成型', group: '全院' },
+        { month: '三月', date: '3/21', type: '輔導', category: '品管輔導員交流共識會', topic: '-', group: '輔導員' },
+        { month: '四月', date: '4/17', type: '輔導', category: '進度輔導(Q5)-B組', topic: '現狀把握/目標設定', group: 'B' },
+        { month: '四月', date: '4/21', type: '輔導', category: '進度輔導(Q5)-A組', topic: '現狀把握/目標設定', group: 'A' },
+        { month: '六月', date: '6/9', type: '輔導', category: '進度輔導(Q6)-A組', topic: '解析/對策擬訂', group: 'A' },
+        { month: '六月', date: '6/12', type: '輔導', category: '進度輔導(Q6)-B組', topic: '解析/對策擬訂', group: 'B' },
+        { month: '六月', date: '6/25', type: '課程', category: '醫品病安標竿分享會', topic: '醫品病安航向標竿 引領航程駛向卓越', group: '全院' },
+        { month: '六月', date: '6/26', type: '輔導', category: '品管輔導員培訓課程', topic: '書面資料審閱技巧實戰-問題解決型', group: '輔導員' },
+        { month: '七月', date: '7/17', type: '課程', category: '品質提升活動期中發表會', topic: '（含前一年度QCC團隊效果維持報告）', group: '全院' },
+        { month: '七月', date: '7/24', type: '課程', category: '品質提升活動課程(Q7)', topic: 'QCC 共通課程-PDCA 基本理念暨實務應用', group: '全院' },
+        { month: '七月/八月', date: '7/31', type: '輔導', category: '進度輔導(Q8)-B組', topic: '期中發表委員建議檢討、對策實施及檢討(P)', group: 'B' },
+        { month: '八月', date: '8/5', type: '課程', category: '全院演講-黃建程主任', topic: '別讓成果只留在報告裡：品管圈成果如何跨足學術發表', group: '全院' },
+        { month: '八月', date: '8/14', type: '輔導', category: '進度輔導(Q8)-A組', topic: '期中發表委員建議檢討、對策實施及檢討(P)', group: 'A' },
+        { month: '十月', date: '10/15', type: '輔導', category: '進度輔導(Q9)-A組', topic: '對策實施及檢討(PDCA)', group: 'A' },
+        { month: '十月', date: '10/16', type: '輔導', category: '進度輔導(Q9)-B組', topic: '對策實施及檢討(PDCA)', group: 'B' },
+        { month: '十二月', date: '12/11', type: '輔導', category: '進度輔導(Q10)-A組', topic: '效果確認/標準化/報告書完成', group: 'A' },
+        { month: '十二月', date: '12/18', type: '輔導', category: '進度輔導(Q10)-B組', topic: '效果確認/標準化/報告書完成', group: 'B' },
+        { month: '隔年二月', date: '2/11-2/12', type: '課程', category: '品質提升活動期末成果發表競賽暨院際交流活動', topic: '-', group: '全院' }
+    ];
+
+    const externalCompetitions = {
+        '醫管學會': {
+            title: '台灣健康照護品質管理競賽',
+            backgroundColor: 'bg-blue-100-content',
+            progress: [
+                { date: '5/7', event: '繳交書面資料+報名表' },
+                { date: '5/23', event: '繳交書面資料+完成報名' },
+                { date: '7/2', event: '書面審查結果公告' },
+                { date: '7/25', event: '完成現場發表報名、繳費' },
+                { date: '8/7', event: '決賽發表' },
+                { date: '10/14', event: '頒獎典禮' },
+            ]
+        },
+        '先鋒品質': {
+            title: '財團法人先鋒品質管制學術研究基金會',
+            backgroundColor: 'bg-green-100-content',
+            subCompetitions: {
+                '全國品管圈大會': {
+                    progress: [
+                        { date: '3/28', event: '繳交報名申請' },
+                        { date: '5/2', event: '繳交書面資料、推薦申請優質圈長及評審委員' },
+                        { date: '6/18', event: '繳交發表簡報' }
+                        { date: '6/20', event: '發表會' }
                     ]
                 },
-                '台灣醫務管理學會': [
-                    {
-                        name: '台灣健康照護品質管理競賽',
-                        team: '救生圈、急品圈安老組、強心圈、救腦圈、綠巨人圈、足穩圈、是8Life',
-                        progress: 90,
-                        tasks: [
-                            { description: '5/7(三) 前繳交競賽書面資料+報名表', status: 'completed' },
-                            { description: '7/2(三) 公告書審結果', status: 'completed' },
-                            { description: '7/25(五) 前報名決賽+繳費', status: 'completed' },
-                            { description: '8/7(四) 決賽發表', status: 'completed' },
-                            { description: '10/14(二) 頒獎典禮', status: 'upcoming' },
-                            { description: '獲獎狀況: 2銅、4佳作、1入選', status: 'award' }
-                        ]
+                '全國金獎品管圈大會': {
+                    progress: [
+                        { date: '7/4', event: '完成報名' },
+                        { date: '8/1', event: '書面審查結果公告' },
+                        { date: '9/3', event: '實地審查' },
+                        { date: '11/28', event: '發表大會' }
+                    ]
+                },
+                '國際品管圈大會(ICQCC)': {
+                    progress: [
+                        { date: '4/30', event: '報名+繳交書面資料' },
+                        { date: '6/3', event: '繳交中英文摘要' },
+                        { date: '7/25', event: '繳交英文書面資料+PPT' },
+                        { date: '11/4-11/5', event: '發表大會' }
+                    ]
+                }
+            }
+        },
+        '中衛': {
+            title: '臺灣持續改善案例競賽',
+            backgroundColor: 'bg-purple-100-content',
+            progress: [
+                { date: '4/30', event: '完成報名登錄' },
+                { date: '5/16', event: '繳交書面資料' },
+                { date: '6/12-6/13', event: '區會初賽-南區發表會' },
+                { date: '6/13', event: '南區頒獎典禮' },
+                { date: '8/21', event: '決賽實地審查（受益圈）' },
+                { date: '8/29', event: '決賽實地審查（ICG圈/救生圈）' },
+                { date: '9/24', event: '決賽實地審查（急品圈安老組）' },
+                { date: '10/2', event: '決賽實地審查（藥帶圈）' },
+                { date: '11/10-11/14', event: '決賽發表暨頒獎典禮-高雄' },
+            ]
+        },
+        '醫品協會': {
+            title: '品質改善成果發表競賽',
+            backgroundColor: 'bg-orange-100-content',
+            progress: [
+                { date: '9/25', event: '繳交報名表+書面資料' },
+                { date: '10/3', event: '完成報名' },
+                { date: '11/3', event: '一階-書面審查' },
+                { date: '12/12', event: '二階-發表/頒獎' },
+            ]
+        },
+        'SNQ': {
+            title: '生策中心(SNQ)',
+            backgroundColor: 'bg-red-100-content',
+            progress: [
+                { date: '7/31', event: '完成報名及繳交書面資料' },
+                { date: '9/30', event: '送出續審申請資料（11件續審、4件不續審）' },
+                { date: '10/3', event: '複審簡報（精準醫學核心實驗室）' },
+                { date: '10/7', event: '複審簡報（成癮防治科）' },
+                { date: '10/16', event: '複審簡報（腦創傷中心）' },
+            ]
+        },
+        'NHQA': {
+            title: '醫策會國家醫療品質獎(NHQA)',
+            backgroundColor: 'bg-teal-100-content',
+            categories: {
+                '主題類': {
+                    progress: [
+                        { date: '5/29', event: '已完成競賽報名' },
+                        { date: '7/31', event: '提交初審書面資料' },
+                        { date: '8/5', event: '第一階段面談' },
+                        { date: '8/21-10/2', event: '分階段實地審查' },
+                        { date: '11/10-11/14', event: '決賽發表' }
+                    ]
+                },
+                '系統類': {
+                    progress: [
+                        { date: '5/29', event: '已完成競賽報名' },
+                        { date: '7/31', event: '提交初審書面資料' },
+                        { date: '8/21-10/2', event: '分階段實地審查' },
+                        { date: '11/10-11/14', event: '決賽發表' }
+                    ]
+                },
+                '傑出醫療類': {
+                    progress: [
+                        { date: '5/29', event: '已完成競賽報名' },
+                        { date: '11/11', event: '實地評審-放射腫瘤部' },
+                        { date: '11/28', event: '實地評審-預防醫學科' },
+                        { date: '12月', event: '頒獎典禮' }
+                    ]
+                },
+                '智慧醫療類': {
+                    progress: [
+                        { date: '5/29', event: '已完成競賽報名' },
+                        { date: '7/31', event: '提交初審書面資料' },
+                        { date: '8/21-10/2', event: '分階段實地審查' },
+                        { date: '11/10-11/14', event: '決賽發表' }
+                    ]
+                },
+                '淨零醫療類': {
+                    progress: [
+                        { date: '5/29', event: '已完成競賽報名' },
+                        { date: '7/31', event: '提交初審書面資料' },
+                        { date: '8/21-10/2', event: '分階段實地審查' },
+                        { date: '11/10-11/14', event: '決賽發表' }
+                    ]
+                }
+            }
+        }
+    };
+
+    const externalCompetitionTeams = {
+        '台灣醫務管理學會－台灣健康照護品質管理競賽': {
+            completion: '已於 2025/5/24 完成報名',
+            teams: [
+                { unit: '加護醫學部', team: '救生圈', topic: '提升急性呼吸衰竭病人拔管後吞嚥功能暨預防吸入性肺炎發生' },
+                { unit: '心臟血管內科', team: '強心圈', topic: '提升心臟衰竭末期的醫療照護品質' },
+                { unit: '急診醫學部', team: '急品圈安老組', topic: '提升急診高齡病人出院準備服務成效' },
+                { unit: '腦中風中心', team: '救腦圈', topic: '提升腦中風中心病人的全管路移除率' },
+                { unit: '手術專責護理', team: '綠巨人圈', topic: '降低手術病人術中壓力性損傷發生率' },
+                { unit: '護理部9A病房', team: '足穩圈', topic: '提升整合病房高齡譫妄照護成效' },
+                { unit: '護理部8A病房', team: '是8Life圈', topic: '降低大腸癌病人化療期間2星期體重下降率' }
+            ]
+        },
+        '中衛發展中心－臺灣持續改善案例競賽': {
+            completion: '已於 2025/5/16 完成報名',
+            teams: [
+                { unit: '護理部7A病房', team: 'ICG圈', topic: '降低外科病房鼻胃管自拔發生率' },
+                { unit: '藥劑部', team: '藥帶圈', topic: '提升加護病房個人化臨床藥事服務量' },
+                { unit: '急診醫學部', team: '急品圈安老組', topic: '建構在宅急症照護模式：開創超高齡照護的新潮流' },
+                { unit: '加護醫學部', team: '救生圈', topic: '整合中西醫治療模式縮短急性呼吸衰竭插管病人復原時間' },
+                { unit: '臨床病理部', team: '受益圈', topic: '縮短委外檢體處理作業時間' }
+            ]
+        },
+        '醫策會－國家醫療品質獎（NHQA）': {
+            completion: '已於 2025/5/29 完成報名',
+            categories: {
+                '主題類': [
+                    { unit: '護理部7A病房', team: 'ICG圈', topic: '降低外科病房鼻胃管自拔發生率' },
+                    { unit: '藥劑部', team: '藥帶圈', topic: '提升加護病房個人化臨床藥事服務量' },
+                    { unit: '急診醫學部', team: '急品圈安老組', topic: '建構在宅急症照護模式：開創超高齡照護的新潮流' },
+                    { unit: '加護醫學部', team: '救生圈', topic: '整合中西醫治療模式縮短急性呼吸衰竭插管病人復原時間' }
+                ],
+                '系統類': [
+                    { unit: '藥劑部', team: '卓越中心組', topic: '' }
+                ],
+                '傑出醫療類': [
+                    { unit: '放射腫瘤部', team: '-', topic: '專業深耕十餘載，奇美超弧刀腦部放射手術的卓越實踐' },
+                    { unit: '預防醫學科', team: '-', topic: '推動生活型態醫學，打造健康台灣全人照護新模式' }
+                ],
+                '智慧醫療類': {
+                    '智慧解決方案組': [
+                        { unit: '腎臟科', team: '奇美A+腎騎士', topic: '全方位翻轉臨床照護與教學現場' },
+                        { unit: '急診醫學部', team: '-', topic: '急診AI儀表板：守護生命最前線、智慧醫療急先鋒' },
+                        { unit: '品質管理中心', team: 'A+病安師', topic: 'AI賦能。風險先知' },
+                        { unit: '實證醫學暨醫療政策中心', team: 'A+巡房大聯盟', topic: '醫護減壓，病安升級' },
+                        { unit: '護理部', team: '-', topic: '不只是藥櫃－全程智慧化打造用藥安全新標竿' },
+                        { unit: '癌症中心', team: '-', topic: '以人為本的科技整合化療全旅程' },
+                        { unit: '整合醫療中心', team: '-', topic: '智行居家＿智能訪視助手' },
+                        { unit: '教學中心', team: 'A+全人醫教整合系統', topic: '全人照護教學臨床融合' },
+                        { unit: '工務室', team: '-', topic: '醫院內網路環境的醫療儀器多層式資安防護罩' },
+                        { unit: '護理部', team: '-', topic: 'AI奇博士：深度問答讓醫療決策更精準' },
+                        { unit: '安全衛生管理室', team: '-', topic: '智慧疏散NEW視界：智慧電子白板在病房災害應變模擬與疏散決策的應用' },
+                        { unit: '醫療事務室', team: '-', topic: '智慧化行政服務再升級：以使用者為導向之可驗證式電子醫療收據應用' },
+                        { unit: '麻醉部', team: '-', topic: '麻醉智匯團：由預測式AI、數位孿生到生成式AI的麻醉風險評估之進化' },
+                        { unit: '麻醉部', team: '-', topic: '串聯門急診住院平台之減痛分娩智慧反饋閉環資訊系統' },
+                        { unit: '藥劑部', team: 'A+藥安師', topic: '生成式AI輔助住院病人藥物風險篩選與個人化照護建議系統' },
+                        { unit: '藥劑部', team: '-', topic: '智能化療調配機器手臂運用於化療藥事服務' },
+                        { unit: '預防醫學科', team: '-', topic: '導入生活型態醫學，建構數據驅動智慧健康促進模式' },
+                        { unit: '感染管制中心', team: 'A+感染管制智慧平台', topic: '精準感管與抗菌決策' }
+                    ],
+                    '智慧服務組': [
+                        { unit: '門診部', team: '-', topic: '以病人為中心的智慧門診服務協作網' },
+                        { unit: '急診醫學部', team: '-', topic: 'AI賦能急診照護—精準預警與無牆醫療新模式' }
+                    ]
+                }
+            }
+        },
+        '生策中心－國家品質標章暨國家生技醫療品質獎（SNQ）': {
+            completion: '已於 2025/7/31 完成報名',
+            categories: {
+                '醫院特色醫療組': [
+                    { unit: '成癮防治科', team: '-', topic: '擺脫成癮的囚牢：藥癮患者的整合照護方案' }
+                ],
+                '醫院醫事服務組': [
+                    { unit: '精準醫療核心實驗室', team: '-', topic: '病理驅動、精準應戰－走向臨床的癌症分子診斷核心實驗室' }
+                ],
+                '醫院醫務管理組': [
+                    { unit: '腦創傷中心', team: '-', topic: '以服務、教學、研究為核心—打造最值得信賴的腦創傷照護體系' }
+                ]
+            }
+        },
+        '財團法人先鋒品質管制學術研究基金會': {
+            categories: {
+                '全國品管圈大會': [
+                    { unit: '臨床病理部', team: '受益圈', topic: '縮短委外檢體處理作業時間' }
+                ],
+                '全國金獎品管圈大會': [
+                    { unit: '臨床病理部', team: '受益圈', topic: '縮短委外檢體處理作業時間' }
+                ],
+                '國際品管圈大會(ICQCC)': [
+                    { unit: '加護醫學部', team: '救生圈', topic: '提升急性呼吸衰竭病人拔管後吞嚥功能暨預防吸入性肺炎發生' },
+                    { unit: '護理部9A病房', team: '足穩圈', topic: '提升整合病房高齡譫妄照護成效' }
+                ]
+            }
+        }
+    };
+
+
+    function getStatus(month, day) {
+        // According to user's instruction, all events from Jan to Aug are completed
+        const completedMonths = [1, 2, 3, 4, 5, 6, 7, 8];
+        let monthNumber = parseInt(month.replace('月', ''), 10);
+        if (completedMonths.includes(monthNumber)) {
+            return { status: '已完成', class: 'status-completed' };
+        } else if (month === '十二月' || month === '隔年二月') {
+             return { status: '待辦', class: 'status-to-do' };
+        }
+        else {
+            const today = new Date('2025-09-18');
+            let eventYear = (monthNumber < today.getMonth() + 1) ? 2026 : 2025;
+            const eventDate = new Date(eventYear, monthNumber - 1, parseInt(day, 10));
+
+            if (eventDate.getTime() > today.getTime()) {
+                return { status: '待辦', class: 'status-to-do' };
+            } else {
+                return { status: '進行中', class: 'status-in-progress' };
+            }
+        }
+    }
+
+
+    function renderInternalTable(filteredEvents) {
+        let htmlContent = `<div class="overflow-x-auto rounded-lg shadow-sm mb-4">
+                            <table class="w-full text-sm text-gray-700">
+                                <thead class="text-xs text-gray-900 uppercase bg-gray-200">
+                                    <tr class="rounded-t-lg">
+                                        <th scope="col" class="py-3 px-6 rounded-tl-lg min-w-date">月份/日期</th>
+                                        <th scope="col" class="py-3 px-6">課程類別</th>
+                                        <th scope="col" class="py-3 px-6">課程/輔導主題</th>
+                                        <th scope="col" class="py-3 px-6 rounded-tr-lg text-right">進度</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+        // Group events by month
+        const eventsByMonth = filteredEvents.reduce((acc, event) => {
+            const month = event.month;
+            if (!acc[month]) {
+                acc[month] = [];
+            }
+            acc[month].push(event);
+            return acc;
+        }, {});
+
+        for (const month in eventsByMonth) {
+            htmlContent += `<tr><td colspan="4" class="group-heading">${month}</td></tr>`;
+            eventsByMonth[month].forEach(event => {
+                const dateParts = event.date.split('-')[0];
+                const monthNumber = dateParts.split('/')[0].replace('月', '');
+                const day = dateParts.split('/')[1];
+                const status = getStatus(monthNumber, day);
+                const statusClass = status.class;
+                const statusText = status.status;
+                htmlContent += `
+                    <tr class="hover:bg-gray-100 transition-colors">
+                        <td class="py-3 px-6 min-w-date">${event.date}</td>
+                        <td class="py-3 px-6">${event.category}</td>
+                        <td class="py-3 px-6">${event.topic}</td>
+                        <td class="py-3 px-6 text-right"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+        }
+        
+        htmlContent += `</tbody></table></div>`;
+        return htmlContent;
+    }
+
+    function renderProgressTable(containerId, title, progressData, backgroundColorClass) {
+        const container = document.getElementById(containerId);
+        let htmlContent = `<div class="p-6 rounded-xl shadow-md ${backgroundColorClass} mb-6">
+                            <h3 class="text-xl font-bold mb-4">${title}</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm text-gray-700">
+                                    <thead class="text-xs text-gray-900 uppercase bg-gray-200">
+                                        <tr>
+                                            <th scope="col" class="py-3 px-6 rounded-tl-lg min-w-date">日期</th>
+                                            <th scope="col" class="py-3 px-6">活動/時程</th>
+                                            <th scope="col" class="py-3 px-6 rounded-tr-lg text-right">進度</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+
+        progressData.forEach(item => {
+            const date = item.date.split('-')[0];
+            const dateParts = date.split('/');
+            const month = dateParts[0];
+            const day = dateParts[1];
+            const status = getStatus(month, day);
+            const statusClass = status.class;
+            const statusText = status.status;
+
+            htmlContent += `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="py-3 px-6 min-w-date">${date}</td>
+                    <td class="py-3 px-6">${item.event}</td>
+                    <td class="py-3 px-6 text-right"><span class="status-badge ${statusClass}">${statusText}</span></td>
+                </tr>
+            `;
+        });
+        
+        htmlContent += `</tbody></table></div></div>`;
+        container.innerHTML += htmlContent;
+    }
+
+    function showInternalActivity(activityType) {
+        document.querySelectorAll('#internal .sub-tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`#internal [onclick="showInternalActivity('${activityType}')"]`).classList.add('active');
+        const container = document.getElementById('internal-progress-view');
+        container.innerHTML = '';
+        
+        let contentHtml = '';
+
+        if (activityType === 'qccTeams') {
+            const qccEvents = internalEvents.filter(event => event.group === 'A' || event.group === 'B' || event.group === '全院');
+            contentHtml = renderInternalTable(qccEvents);
+        } else if (activityType === 'consultants') {
+            const consultantEvents = internalEvents.filter(event => event.group === '輔導員');
+            contentHtml = renderInternalTable(consultantEvents);
+        } else if (activityType === 'allHospital') {
+            const allHospitalEvents = internalEvents.filter(event => event.group === '全院' && event.type === '課程');
+            contentHtml = renderInternalTable(allHospitalEvents);
+        }
+
+        container.innerHTML = contentHtml;
+    }
+
+    function showExternalCompetition(competitionKey) {
+        document.querySelectorAll('#external .sub-tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`#external [onclick="showExternalCompetition('${competitionKey}')"]`).classList.add('active');
+
+        const competitionData = externalCompetitions[competitionKey];
+        const container = document.getElementById('external-progress-view');
+        container.innerHTML = '';
+
+        if (competitionData.categories) {
+            let categoryButtonsHtml = '';
+            for (const category in competitionData.categories) {
+                categoryButtonsHtml += `<button class="sub-tab-button" onclick="showNhqaCategory('${category}')">${category}</button>`;
+            }
+            container.innerHTML += `<h2 class="text-2xl font-bold mb-4">${competitionData.title}</h2>
+                                    <div class="flex space-x-4 mb-8 justify-center flex-wrap gap-2">${categoryButtonsHtml}</div>
+                                    <div id="nhqa-category-progress"></div>`;
+            document.getElementById('nhqa-category-progress').innerHTML = `<p class="text-gray-500 text-center text-lg mt-12">請點選上方按鈕查看各類別進度</p>`;
+        } else if (competitionData.subCompetitions) {
+            container.innerHTML += `<h2 class="text-2xl font-bold mb-4">${competitionData.title}</h2>`;
+            for (const subComp in competitionData.subCompetitions) {
+                const subCompData = competitionData.subCompetitions[subComp];
+                renderProgressTable('external-progress-view', subComp, subCompData.progress, competitionData.backgroundColor);
+            }
+        } else {
+            container.innerHTML = `<h2 class="text-2xl font-bold mb-4">${competitionData.title}</h2>`;
+            renderProgressTable('external-progress-view', competitionData.title, competitionData.progress, competitionData.backgroundColor);
+        }
+    }
+
+    function showNhqaCategory(category) {
+        const categoryData = externalCompetitions['NHQA'].categories[category];
+        const container = document.getElementById('nhqa-category-progress');
+        container.innerHTML = '';
+        renderProgressTable('nhqa-category-progress', category, categoryData.progress, 'bg-teal-100-content');
+    }
+
+    function openTab(tabName) {
+        const tabs = document.querySelectorAll('.tab-button');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+        contents.forEach(content => {
+            content.classList.remove('active');
+        });
+
+        document.querySelector(`[onclick="openTab('${tabName}')"]`).classList.add('active');
+        document.getElementById(tabName).classList.add('active');
+
+        if (tabName === 'home') {
+             renderHome();
+        } else {
+             document.getElementById('internal-progress-view').innerHTML = '<p class="text-gray-500 text-center text-lg mt-12">請點選上方按鈕查看活動進度</p>';
+             document.querySelectorAll('#internal .sub-tab-button').forEach(btn => btn.classList.remove('active'));
+             document.getElementById('external-progress-view').innerHTML = '';
+             document.querySelectorAll('#external .sub-tab-button').forEach(btn => btn.classList.remove('active'));
+        }
+    }
+
+    function renderHome() {
+        const qccTableBody = document.getElementById('qcc-teams');
+        qccTableBody.innerHTML = '';
+
+        const qccGroups = {
+            'A組': { teams: qccTeams.filter(team => team.group === 'A組'), consultant: '陳建宇顧問' },
+            'B組': { teams: qccTeams.filter(team => team.group === 'B組'), consultant: '廖熏香顧問' }
+        };
+
+        for (const group in qccGroups) {
+            const groupInfo = qccGroups[group];
+            qccTableBody.innerHTML += `<tr><td colspan="3" class="group-heading">${group}-${groupInfo.consultant}</td></tr>`;
+            groupInfo.teams.forEach(team => {
+                qccTableBody.innerHTML += `
+                    <tr class="hover:bg-gray-100 transition-colors">
+                        <td class="py-3 px-6">${team.id}</td>
+                        <td class="py-3 px-6">${team.unit}</td>
+                        <td class="py-3 px-6">${team.topic}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        const externalTableBody = document.getElementById('external-teams');
+        externalTableBody.innerHTML = '';
+
+        for (const organizer in externalCompetitionTeams) {
+            externalTableBody.innerHTML += `<tr><td colspan="3" class="group-heading">${organizer}</td></tr>`;
+            const data = externalCompetitionTeams[organizer];
+
+            if (data.completion) {
+                externalTableBody.innerHTML += `<tr><td colspan="3" class="py-3 px-6 completion-note">${data.completion}</td></tr>`;
+            }
+
+            if (data.teams) {
+                data.teams.forEach(team => {
+                    externalTableBody.innerHTML += `
+                        <tr class="hover:bg-gray-100 transition-colors">
+                            <td class="py-3 px-6">${team.unit}</td>
+                            <td class="py-3 px-6">${team.team}</td>
+                            <td class="py-3 px-6">${team.topic}</td>
+                        </tr>
+                    `;
+                });
+            } else if (data.categories) {
+                for (const category in data.categories) {
+                    externalTableBody.innerHTML += `<tr><td colspan="3" class="sub-group-heading">${category}</td></tr>`;
+                    const categoryData = data.categories[category];
+                    if (Array.isArray(categoryData)) {
+                        categoryData.forEach(team => {
+                             externalTableBody.innerHTML += `
+                                <tr class="hover:bg-gray-100 transition-colors">
+                                    <td class="py-3 px-6">${team.unit}</td>
+                                    <td class="py-3 px-6">${team.team}</td>
+                                    <td class="py-3 px-6">${team.topic}</td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        for (const subCategory in categoryData) {
+                             externalTableBody.innerHTML += `<tr><td colspan="3" class="px-6 py-3 font-semibold text-sm text-gray-600 bg-gray-100">${subCategory}</td></tr>`;
+                             categoryData[subCategory].forEach(team => {
+                                externalTableBody.innerHTML += `
+                                    <tr class="hover:bg-gray-100 transition-colors">
+                                        <td class="py-3 px-6">${team.unit}</td>
+                                        <td class="py-3 px-6">${team.team}</td>
+                                        <td class="py-3 px-6">${team.topic}</td>
+                                    </tr>
+                                `;
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Initial render
+    document.addEventListener('DOMContentLoaded', () => {
+        openTab('home');
+    });
+</script>
+
+</body>
+</html>
